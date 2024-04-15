@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class orderUtil {
 	
@@ -23,5 +25,13 @@ public class orderUtil {
 	        e.printStackTrace();
 	    }
 	}
+	
+	// 오늘 날짜 
+	public String today() {
+	    Date today = new Date();
+	    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	    return dateFormat.format(today);
+	}
+
 
 }
