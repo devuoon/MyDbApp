@@ -6,8 +6,27 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class userUtil {
-    boolean loggedIn = false;
-    static String currentId = null;
+    
+    private static boolean loggedIn = false;
+    private static String currentId = null;
+    
+    // 로그인 상태 반
+    public static boolean isLoggedIn() {
+        return loggedIn;
+    }
+
+    public static void setLoggedIn(boolean loggedIn) {
+        userUtil.loggedIn = loggedIn;
+    }
+
+    // 현재 로그인된 사용자 아이디 반환
+    public String getCurrentId() {
+        return currentId;
+    }
+
+    public static void setCurrentId(String currentId) {
+        userUtil.currentId = currentId;
+    }
 
     // 아이디 중복 확인
     public boolean IdExistCheck(String id) {
@@ -47,9 +66,10 @@ public class userUtil {
                 if (rs.next()) {
                     int count = rs.getInt(1);
                     if (count > 0) {
-                        loggedIn = true; // 로그인 상태 변경
-                        currentId = id; // 현재 로그인된 사용자 아이디 저장
+                    	 userUtil.setLoggedIn(true); // 로그인 상태 변경
+                         userUtil.setCurrentId(id); // 현재 로그인된 사용자 아이디 저장
                         System.out.println(currentId);
+                        System.out.println(loggedIn);
                         return true;
                     }
                 }
@@ -61,24 +81,24 @@ public class userUtil {
         }
         return false;
     }
-
-    // 현재 로그인된 사용자 아이디 반환
-    public String getCurrentId() {
-        return currentId;
-    }
+  
 
     
     // 로그아웃
     public void logout() {
-        loggedIn = false; // 로그아웃 상태로 변경
-        currentId = null; // 현재 로그인된 사용자 아이디 초기화
+    	userUtil.setLoggedIn(false); // 로그인 상태 변경
+        userUtil.setCurrentId(null); // 현재 로그인된 사용자 아이디 저장
     }
 
 
-
+//
 //    // 로그인 상태 반환
-//    public boolean isLoggedIn() {
-//        return loggedIn;
+//    public void LogSt() {
+//        if (currentId != null) {
+//        	loggedIn = true;
+//        } else if (currentId == null) {
+//        	loggedIn = false;
+//        }
 //    }
 
     // 로그인 후 이름 조회
