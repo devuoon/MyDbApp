@@ -1,6 +1,5 @@
 import java.util.Scanner;
 
-
 import Cart.cartImpl;
 import Users.userImpl;
 import Utils.userUtil;
@@ -15,14 +14,14 @@ public class Menu {
     static boolean loggedIn = false;
 
     public static void menu() {
+    	
         boolean running = true;
-        
         while (running) {
         	if(!util.isLoggedIn()) {
         		System.out.println("===================================== 어서오세요. Bluebottle 입니다. =====================================");
             	System.out.println("        	");
             	System.out.println("       			┌───────────────┐  ┌───────────────┐  ┌───────────────┐                   ");
-            	System.out.println("        		│   1. 회원가입   	│  │   2. 로그인	   │  │  3. 주문하기 	            ");
+            	System.out.println("        		│   1. 회원가입   	│  │   2. 로그인	   │  │  3. 주문하기 	  │                   ");
             	System.out.println("        		└───────────────┘  └───────────────┘  └───────────────┘              ");
         		System.out.println("        		┌───────────────┐  ┌───────────────┐  ┌───────────────┐               ");
         		System.out.println("        		│   4. 주문내역   	│  │   5. 마이페이	   │  │  6. 종료 	      │	               ");
@@ -33,7 +32,7 @@ public class Menu {
         		System.out.println("===================================== 어서오세요. Bluebottle 입니다. =====================================");
             	System.out.println("        	");
             	System.out.println("       			┌───────────────┐  ┌───────────────┐  ┌───────────────┐                   ");
-            	System.out.println("        		│   1. 회원가입   	│  │   2. 로그아웃	   │  │  3. 주문하기 	            ");
+            	System.out.println("        		│   1. 회원가입   	│  │   2. 로그아웃	   │  │  3. 주문하기 	  │           ");
             	System.out.println("        		└───────────────┘  └───────────────┘  └───────────────┘              ");
         		System.out.println("        		┌───────────────┐  ┌───────────────┐  ┌───────────────┐               ");
         		System.out.println("        		│   4. 주문내역   	│  │   5. 마이페이	   │  │  6. 종료 	      │	               ");
@@ -52,7 +51,7 @@ public class Menu {
             switch (num) {
                 case 1:
                 	
-                    if (loggedIn = false) {
+                    if (!util.isLoggedIn()) {
                         ur.signUp(scanner);
                     } else {
                         System.out.println("이미 로그인 상태입니다. 메뉴를 재선택해주세요.");
@@ -83,12 +82,13 @@ public class Menu {
                     }
                     break;
                 case 5:
-                	if (loggedIn) {
-                		
+                    if (util.isLoggedIn()) {
+                        // loggedIn 변수 대신에 util.isLoggedIn() 메서드 사용
                     } else {
                         System.out.println("로그인이 필요한 기능입니다. 로그인 후 다시 시도해주세요.");
                     }
                     break;
+
                 case 6:
                 	System.out.println("감사합니다. 또 방문해주세요.");
                     running = false; // 종료합니다.
