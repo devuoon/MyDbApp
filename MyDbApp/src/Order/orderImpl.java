@@ -45,8 +45,8 @@ public class orderImpl implements order {
                 		+ "	INNER JOIN CART C ON P.NO = C.NO\n"
                 		+ "	INNER JOIN MENU M ON M.MNO = C.MNO \n"
                 		+ " 	INNER JOIN USERS U ON C.ID = U.ID\n"
-                		+ "WHERE U.ID = ?"
-                		+ "GROUP BY U.NAME, M.MNAME, M.MPRICE, c.QUAN, c.CNO";
+                		+ "WHERE U.ID = ? \n"
+                		+ "GROUP BY U.NAME, M.MNAME, M.MPRICE, c.QUAN, c.CNO \n";
                 try (PreparedStatement selectStmtName = conn.prepareStatement(selectSqlName)) {
                     selectStmtName.setString(1, uu.getCurrentId());
                     try (ResultSet rsName = selectStmtName.executeQuery()) {
