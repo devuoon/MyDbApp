@@ -9,8 +9,8 @@ import Order.orderImpl;
 
 public class Menu {
     static Scanner scanner = new Scanner(System.in);
-    private static userImpl ur = new userImpl();
-    private static cartImpl or = new cartImpl();
+    private static userImpl ui = new userImpl();
+    private static cartImpl ci = new cartImpl();
     private static orderImpl oi = new orderImpl();
     static userUtil util = new userUtil();
     static boolean loggedIn = false;
@@ -54,14 +54,14 @@ public class Menu {
                 case 1:
                 	
                     if (!util.isLoggedIn()) {
-                        ur.signUp(scanner);
+                        ui.signUp(scanner);
                     } else {
                         System.out.println("이미 로그인 상태입니다. 메뉴를 재선택해주세요.");
                     }
                     break;
                 case 2:
                     if (!util.isLoggedIn()) {
-                        ur.signIn(scanner);
+                        ui.signIn(scanner);
                         System.out.println(util.getCurrentId());
                     } else if(util.isLoggedIn()) {
                     	util.logout();
@@ -70,8 +70,8 @@ public class Menu {
                     break;
                 case 3:
                     if (util.isLoggedIn()) {
-                        or.cart(scanner);
-                        or.pay(scanner);
+                        ci.cart(scanner);
+                        ci.pay(scanner);
                     } else {
                         System.out.println("로그인이 필요한 기능입니다. 로그인 후 다시 시도해주세요.");
                     }
