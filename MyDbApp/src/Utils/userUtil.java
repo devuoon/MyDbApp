@@ -9,9 +9,10 @@ public class userUtil {
     
     private static boolean loggedIn = false;
     private static String currentId = null;
+    private static String currentName = null;
     
     // 로그인 상태 반
-    public static boolean isLoggedIn() {
+    public boolean isLoggedIn() {
         return loggedIn;
     }
 
@@ -23,10 +24,21 @@ public class userUtil {
     public String getCurrentId() {
         return currentId;
     }
+    
+    public String getCurrentName() {
+        return currentName;
+        
+    }
+
+    public static void setCurrentName(String currentId) {
+        userUtil.currentName = getNameById(currentId);
+    }
+
 
     public static void setCurrentId(String currentId) {
         userUtil.currentId = currentId;
     }
+
 
     // 아이디 중복 확인
     public boolean IdExistCheck(String id) {
@@ -68,8 +80,6 @@ public class userUtil {
                     if (count > 0) {
                     	 userUtil.setLoggedIn(true); // 로그인 상태 변경
                          userUtil.setCurrentId(id); // 현재 로그인된 사용자 아이디 저장
-                        System.out.println(currentId);
-                        System.out.println(loggedIn);
                         return true;
                     }
                 }
@@ -83,6 +93,7 @@ public class userUtil {
     }
   
 
+
     
     // 로그아웃
     public void logout() {
@@ -90,32 +101,22 @@ public class userUtil {
         userUtil.setCurrentId(null); // 현재 로그인된 사용자 아이디 저장
     }
 
-
-//
-//    // 로그인 상태 반환
-//    public void LogSt() {
-//        if (currentId != null) {
-//        	loggedIn = true;
-//        } else if (currentId == null) {
-//        	loggedIn = false;
-//        }
-//    }
-
     // 로그인 후 이름 조회
-    public String getNameById(String id) {
+    public static String getNameById(String id) {
         String sql = "SELECT name FROM users WHERE id = ?";
         try (Connection conn = commonUtil.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, id);
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
-                    return rs.getString("name");
+                    currentName = rs.getString("name");
+                    return currentName;
                 }
             }
         } catch (SQLException e) {
             System.out.println("이름 조회 중 오류가 발생했습니다.");
             e.printStackTrace();
         }
-        return null;
+        return currentName;
     }
 }

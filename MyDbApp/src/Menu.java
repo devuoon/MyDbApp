@@ -1,6 +1,4 @@
 import java.util.Scanner;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import Cart.cartImpl;
 import Users.userImpl;
@@ -20,28 +18,30 @@ public class Menu {
         boolean running = true;
         while (running) {
         	if(!util.isLoggedIn()) {
+        		System.out.println("        	");
         		System.out.println("===================================== 어서오세요. Bluebottle 입니다. =====================================");
             	System.out.println("        	");
-            	System.out.println("       			┌───────────────┐  ┌───────────────┐  ┌───────────────┐                   ");
-            	System.out.println("        		│   1. 회원가입   	│  │   2. 로그인	   │  │  3. 주문하기 	  │                   ");
-            	System.out.println("        		└───────────────┘  └───────────────┘  └───────────────┘              ");
+            	System.out.println("       			┌───────────────┐  ┌───────────────┐                    ");
+            	System.out.println("        		│   1. 회원가입   	│  │   2. 로그인	   │                  ");
+            	System.out.println("        		└───────────────┘  └───────────────┘            ");
         		System.out.println("        		┌───────────────┐  ┌───────────────┐  ┌───────────────┐               ");
-        		System.out.println("        		│   4. 주문내역   	│  │   5. 마이페이	   │  │  6. 종료 	      │	               ");
+        		System.out.println("        		│   3. 주문하기   	│  │   4. 주문내역	   │  │  5. 종료 	      │	               ");
         		System.out.println("        		└───────────────┘  └───────────────┘  └───────────────┘               ");
         		System.out.println("        	");
         		System.out.println("========================================== 메뉴를 선택하세요. ============================================");
         	} else if (util.isLoggedIn()) {
         		System.out.println("===================================== 어서오세요. Bluebottle 입니다. =====================================");
             	System.out.println("        	");
-            	System.out.println("       			┌───────────────┐  ┌───────────────┐  ┌───────────────┐                   ");
-            	System.out.println("        		│   1. 회원가입   	│  │   2. 로그아웃	   │  │  3. 주문하기 	  │           ");
-            	System.out.println("        		└───────────────┘  └───────────────┘  └───────────────┘              ");
+            	System.out.println("       			┌───────────────┐  ┌───────────────┐                    ");
+            	System.out.println("        		│   1. 회원가입   	│  │   2. 로그아웃	   │                  ");
+            	System.out.println("        		└───────────────┘  └───────────────┘            ");
         		System.out.println("        		┌───────────────┐  ┌───────────────┐  ┌───────────────┐               ");
-        		System.out.println("        		│   4. 주문내역   	│  │   5. 마이페이	   │  │  6. 종료 	      │	               ");
+        		System.out.println("        		│   3. 주문하기   	│  │   4. 주문내역	   │  │  5. 종료 	      │	               ");
         		System.out.println("        		└───────────────┘  └───────────────┘  └───────────────┘               ");
         		System.out.println("        	");
         		System.out.println("========================================== 메뉴를 선택하세요. ============================================");
         	}
+        	
     		System.out.println("        	");
     		System.out.print(">>  ");
             
@@ -62,7 +62,6 @@ public class Menu {
                 case 2:
                     if (!util.isLoggedIn()) {
                         ui.signIn(scanner);
-                        System.out.println(util.getCurrentId());
                     } else if(util.isLoggedIn()) {
                     	util.logout();
                         System.out.println("로그아웃 되었습니다.");
@@ -71,27 +70,18 @@ public class Menu {
                 case 3:
                     if (util.isLoggedIn()) {
                         ci.cart(scanner);
-                        ci.pay(scanner);
                     } else {
                         System.out.println("로그인이 필요한 기능입니다. 로그인 후 다시 시도해주세요.");
                     }
                     break;
                 case 4:
                 	if (util.isLoggedIn()) {
-                		oi.order(scanner);
+                		oi.pay(num, num);
                     } else {
                         System.out.println("로그인이 필요한 기능입니다. 로그인 후 다시 시도해주세요.");
                     }
                     break;
                 case 5:
-                    if (util.isLoggedIn()) {
-                        // loggedIn 변수 대신에 util.isLoggedIn() 메서드 사용
-                    } else {
-                        System.out.println("로그인이 필요한 기능입니다. 로그인 후 다시 시도해주세요.");
-                    }
-                    break;
-
-                case 6:
                 	System.out.println("감사합니다. 또 방문해주세요.");
                     running = false; // 종료합니다.
                     break;

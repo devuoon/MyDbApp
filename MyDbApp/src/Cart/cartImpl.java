@@ -1,14 +1,10 @@
 package Cart;
 
-import java.sql.Connection;
-
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Scanner;
-import Utils.commonUtil;
 import Utils.cartUtil;
+import Utils.orderUtil;
 import Order.orderImpl;
+import Users.userImpl;
 import Utils.userUtil;
 
 public class cartImpl implements cart {
@@ -16,11 +12,14 @@ public class cartImpl implements cart {
 	cartUtil cu = new cartUtil();
 	orderImpl oi = new orderImpl();
 	userUtil uu = new userUtil();
+	userImpl ui = new userImpl();
+	orderUtil ou = new orderUtil();
 
 	@Override
 	public void cart(Scanner sc) {
 		System.out.println("====================== 메뉴판 ======================");
 		System.out.printf("%-10s%-30s%-10s\n", "No", "Menu", "  Price");
+		System.out.println("--------------------------------------------------");
 		System.out.printf("%-10s%-30s%-10s\n", "1", "(HOT) 아메리카노", "1,800원");
 		System.out.printf("%-10s%-30s%-10s\n", "2", "(ICE) 아메리카노", "2,100원");
 		System.out.printf("%-10s%-30s%-10s\n", "3", "(HOT) 헤이즐넛  ", " 2,300원");
@@ -52,37 +51,43 @@ public class cartImpl implements cart {
 			// 장바구니에 추가
 			cu.addToCart(menuNum, quan);
 		}
-
-		// 주문 가격 합계 출력
-//		System.out.println("주문 가격 합계: " + cu.totalPrice + "원");
-//		System.out.println("");
-	}
-
-	@Override
-	public void pay(Scanner sc) {
-		try (Connection conn = commonUtil.getConnection()) {
-			// CART_SEQ.NEXTVAL을 사용하여 다음 시퀀스 값을 가져옴
-			String insertSql = "INSERT INTO PAY (PNO, ID, SPRICE) VALUES (PAY_SEQ.NEXTVAL, ?, ?)";
-			try (PreparedStatement insertStmt = conn.prepareStatement(insertSql)) {
-				insertStmt.setString(1, uu.getCurrentId());
-				insertStmt.setInt(2, cu.totalPrice);
-//				System.out.println(uu.getCurrentId());
-
-				int rowsInserted = insertStmt.executeUpdate();
-				if (rowsInserted > 0) {
-					System.out.println("결제가 완료되었습니다.");
-
-					// 결제 확인
-					System.out.println("총 주문 수량은 " + cu.totalQuan + "개, 금액은 " + cu.totalPrice + "원 입니다.");
-					System.out.println("        	");
-					oi.order(sc); // 주문하기
-				} else {
-					System.out.println("결제에 실패했습니다.");
-				}
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
+		// 결제 수단 입력
+		System.out.println("        	");
+		System.out.println("결제 수단을 선택해주세요. (스탬프 10개 이상 음료 1잔 무료)");
+		System.out.println("1. 카드   2. 현금   3. 스탬프");
+		System.out.print(">> ");
+		int pay = scanner.nextInt();
+		scanner.nextLine();
+		if (pay == 1) {
+			System.out.println("카드로 결제되었습니다.");
+			// 주문 가격 합계 출력
+			System.out.println("주문 수량 : " + cu.totalQuan + "개 / 가격 합계 : " + cu.totalPrice + "원");
+			System.out.println("");
+			oi.pay(pay, pay);
+			ui.stamp(sc);
+			// 주문이 성공적으로 처리되면 장바구니에서 해당 상품을 삭제
+			ou.removeToCart();
+		} else if (pay == 2) {
+			System.out.println("현금으로 결제되었습니다.");
+			// 주문 가격 합계 출력
+			System.out.println("주문 수량 : " + cu.totalQuan + "개 / 가격 합계 : " + cu.totalPrice + "원");
+			System.out.println("");
+			oi.pay(pay, pay);
+			ui.stamp(sc);
+			// 주문이 성공적으로 처리되면 장바구니에서 해당 상품을 삭제
+			ou.removeToCart();
+		} else if (pay == 3) {
+			cu.payToStamp();
+			// 주문 가격 합계 출력
+			System.out.println("주문 수량 : " + cu.totalQuan + "개 / 가격 합계 : 0원");
+			System.out.println("");
+			oi.pay(pay, pay);
+			cu.getStampById(null);
+			// 주문이 성공적으로 처리되면 장바구니에서 해당 상품을 삭제
+			ou.removeToCart();
 		}
+
+		
 	}
 
 }

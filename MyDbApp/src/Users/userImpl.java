@@ -1,6 +1,7 @@
 package Users;
 
 import java.sql.Connection;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -79,7 +80,7 @@ public class userImpl implements user {
 			} else {
 				System.out.println("아이디 또는 비밀번호가 올바르지 않습니다. ( 메뉴로 돌아가기 : 0 )");
 				continue;
-				
+
 			}
 //			int numZero = sc.nextInt();
 //			sc.nextLine();
@@ -92,40 +93,76 @@ public class userImpl implements user {
 	// 적립
 	@Override
 	public void stamp(Scanner sc) {
+	    try (Connection conn = commonUtil.getConnection()) {
+	        String selectSql = "SELECT SUM(QUAN) AS SQUAN FROM CART C WHERE ID = ?";
+	        try (PreparedStatement selectStmt = conn.prepareStatement(selectSql)) {
+	            selectStmt.setString(1, util.getCurrentId());
+	            try (ResultSet rsQuan = selectStmt.executeQuery()) {
+	                int SQuan = 0;
+	                if (rsQuan.next()) {
+	                    SQuan = rsQuan.getInt("SQUAN");
+	                }
+
+	                String updateSql = "UPDATE USERS SET STAMP = STAMP + ? WHERE ID = ?";
+	                try (PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
+	                    updateStmt.setInt(1, SQuan);
+	                    updateStmt.setString(2, util.getCurrentId());
+	                    int rowsUpdated = updateStmt.executeUpdate();
+	                    if (rowsUpdated > 0) {
+	                        // 업데이트가 성공했으므로 이제 새로운 적립 스탬프 값을 가져와 출력합니다.
+	                        int newStamp = updateToStamp(sc);
+	                        System.out.println("현재 적립 스탬프: " + newStamp + "개");
+	                        System.out.println(
+	                                "============================================================================");
+	                        System.out.println("        	");
+	                    } else {
+	                        System.out.println("적립에 실패했습니다.");
+	                    }
+	                }
+	            }
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	}
+
+
+	// 스탬프 USERS 테이블에 저장하기
+//	public void setStamp() {
+//		try (Connection conn = commonUtil.getConnection()) {
+//	        String updateSql = "UPDATE USERS SET STAMP = ? WHERE ID = ?";
+//	        try (PreparedStatement updateStmt = conn.prepareStatement(selectSql)) {
+//	        	
+//	        	updateStmt.setInt(1, SQuan);
+//				updateStmt.setString(2, util.getCurrentId());
+//	            try (ResultSet rsQuan = selectStmt.executeQuery()) {
+//	                if (rsQuan.next()) {
+//	                    SQuan = rsQuan.getInt("SQUAN");
+//	                }
+//	            }
+//	        }
+//	    } catch (SQLException e) {
+//	        e.printStackTrace();
+//	    }
+//	}
+
+	// 업데이트 한 스탬프 가져오기
+	public int updateToStamp(Scanner sc) {
+		int SQuan = 0; // SQuan 변수를 선언
 		try (Connection conn = commonUtil.getConnection()) {
 			String selectSql = "SELECT SUM(QUAN) AS SQUAN FROM CART c WHERE ID = ?";
 			try (PreparedStatement selectStmt = conn.prepareStatement(selectSql)) {
 				selectStmt.setString(1, util.getCurrentId());
 				try (ResultSet rsQuan = selectStmt.executeQuery()) {
-					int SQuan = 0;
 					if (rsQuan.next()) {
 						SQuan = rsQuan.getInt("SQUAN");
-					}
-
-					String updateSql = "UPDATE USERS " + "SET STAMP = ? " + "WHERE ID = ?";
-					String selectSql2 = "SELECT STAMP AS ALLSTAMP FROM USERS WHERE ID=? ";
-					try (PreparedStatement updateStmt = conn.prepareStatement(updateSql);
-							PreparedStatement selectStamp = conn.prepareStatement(selectSql2)) {
-						selectStamp.setString(1, util.getCurrentId());
-						try (ResultSet rs = selectStamp.executeQuery()) {
-							if (rs.next()) {
-								stamp = rs.getInt("ALLSTAMP"); // 총 스탬프를 업데이트하기 전에 현재 스탬프를 가져옵니다.
-							}
-						}
-
-						updateStmt.setInt(1, SQuan);
-						updateStmt.setString(2, util.getCurrentId());
-						int rowsUpdated = updateStmt.executeUpdate();
-						if (rowsUpdated > 0) {
-							System.out.println("현재 적립 스탬프: " + SQuan);
-						} else {
-							System.out.println("적립에 실패했습니다.");
-						}
 					}
 				}
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		return SQuan; // SQuan 변수를 반환
 	}
+
 }

@@ -1,6 +1,7 @@
 package Order;
 
 import java.sql.Connection;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -9,68 +10,81 @@ import Utils.commonUtil;
 import Utils.userUtil;
 import Users.userImpl;
 import Utils.orderUtil;
+import Utils.cartUtil;
 
 public class orderImpl implements order {
-    private userUtil uu = new userUtil();
-    userImpl ui = new userImpl();
-    orderUtil ou = new orderUtil();
+	static Scanner scanner = new Scanner(System.in);
+	private userUtil uu = new userUtil();
+	userImpl ui = new userImpl();
+	orderUtil ou = new orderUtil();
+	cartUtil cu = new cartUtil();
 
-    @Override
-    public void order(Scanner sc) {
-        try (Connection conn = commonUtil.getConnection()) {
-            String selectSqlNO = "SELECT MAX(PNO) AS PNO FROM PAY WHERE ID = ? GROUP BY ID, NO";
-            try (PreparedStatement selectStmtNo = conn.prepareStatement(selectSqlNO)) {
-                selectStmtNo.setString(1, uu.getCurrentId());
-                try (ResultSet rsNo = selectStmtNo.executeQuery()) {
-                    int SPNO = 0;
-                    if (rsNo.next()) {
-                        SPNO = rsNo.getInt("PNO");
-                    }
-//                System.out.println(uu.getCurrentId());
+	@Override
+	public void pay(int menuNum, int quan) {
+		try (Connection conn = commonUtil.getConnection()) {
+			
 
-                String insertSql = "INSERT INTO ORDERS (ONO,ID,OCHECK,PNO) VALUES (ORDER_SEQ.NEXTVAL,?,NULL,?)";
-                try (PreparedStatement insertStmt = conn.prepareStatement(insertSql)) {
-                    insertStmt.setString(1, uu.getCurrentId());
-                    insertStmt.setInt(2, SPNO);
-                    int rowInserted = insertStmt.executeUpdate();
-                    if (rowInserted > 0) {
-//                      System.out.println("Order에 정상적으로 반영되었습니다.");
-                    }
-                }
-                }
+			// CART 테이블 정보 조회 및 주문 처리
+			String selectSql = "SELECT CNO, MNO, ID, QUAN, TO_CHAR(ODATE, 'YYYY-MM-DD HH24:MI') AS ODATE FROM CART WHERE ID = ?";
+			try (PreparedStatement selectStmt = conn.prepareStatement(selectSql)) {
+			    selectStmt.setString(1, uu.getCurrentId());
+			    ResultSet rs = selectStmt.executeQuery();
+			    while (rs.next()) {
+			        int cno = rs.getInt("CNO");
+			        int mno = rs.getInt("MNO");
+			        String id = rs.getString("ID");
+			        int quantity = rs.getInt("QUAN");
+			        String orderDate = rs.getString("ODATE"); // 날짜 및 시간을 문자열로 가져옴
 
-                String selectSqlName = "SELECT U.NAME, M.MNAME, M.MPRICE, c.QUAN, c.CNO  \n"
-                		+ "FROM ORDERS O \n"
-                		+ "	INNER JOIN PAY P ON O.PNO = P.PNO\n"
-                		+ "	INNER JOIN CART C ON P.NO = C.NO\n"
-                		+ "	INNER JOIN MENU M ON M.MNO = C.MNO \n"
-                		+ " 	INNER JOIN USERS U ON C.ID = U.ID\n"
-                		+ "WHERE U.ID = ? \n"
-                		+ "GROUP BY U.NAME, M.MNAME, M.MPRICE, c.QUAN, c.CNO \n";
-                try (PreparedStatement selectStmtName = conn.prepareStatement(selectSqlName)) {
-                    selectStmtName.setString(1, uu.getCurrentId());
-                    try (ResultSet rsName = selectStmtName.executeQuery()) {
-                    	System.out.println("=================================================");
-                        System.out.println(uu.getCurrentId() + "님의 주문내역:");
-                        System.out.printf("%-20s%-10s%-10s\n", "메뉴명", "수량", "결제금액");
-                        while (rsName.next()) {
-                            String menuName = rsName.getString("MNAME");
-                            int price = rsName.getInt("MPRICE");
-                            int quantity = rsName.getInt("QUAN");
-                            System.out.printf("%-20s%-10d%-10d\n", menuName, quantity, price * quantity);
+			        // 주문 처리
+			        String insertSql = "INSERT INTO ORDERS (CNO, MNO, ID, QUAN, ODATE) VALUES (?, ?, ?, ?, TO_DATE(?, 'YYYY-MM-DD HH24:MI'))";
+			        try (PreparedStatement insertStmt = conn.prepareStatement(insertSql)) {
+			            insertStmt.setInt(1, cno);
+			            insertStmt.setInt(2, mno);
+			            insertStmt.setString(3, id);
+			            insertStmt.setInt(4, quantity);
+			            insertStmt.setString(5, orderDate); // 문자열로 된 날짜 및 시간을 설정
 
-                        }
-                        System.out.println("=================================================");
-                        ui.stamp(sc);
-                        System.out.println("        	");
-                    }
-                }
-                //ou.removeToCart();
-            }  
-        } catch (SQLException e) {
-            System.out.println("주문 처리 중 오류가 발생했습니다.");
-            e.printStackTrace();
-        }
-    }
-   
+			            int rowsInserted = insertStmt.executeUpdate();
+			            if (rowsInserted > 0) {
+//			                System.out.println("주문이 성공적으로 처리되었습니다.");
+			            } else {
+			                System.out.println("주문 처리에 실패했습니다.");
+			            }
+			        }
+			    }
+			}
+
+
+
+			// 주문 조회 쿼리
+			String selectSqlOrder = "SELECT * FROM ORDERS o JOIN MENU m ON m.MNO = o.MNO JOIN USERS u ON u.ID = o.ID WHERE u.ID = ?";
+			// 주문 내역 조회 및 출력
+			try (PreparedStatement selectStmtOrder = conn.prepareStatement(selectSqlOrder)){
+			    selectStmtOrder.setString(1, uu.getCurrentId());
+			    ResultSet rs2 = selectStmtOrder.executeQuery();
+			    System.out.println("============================================================================");
+			    System.out.println(uu.getCurrentName() + "님의 주문내역 ");
+			    System.out.printf("%-30s%-20s%-5s%-10s\n", "주문날짜", "메뉴명", "수량", "결제금액");
+			    System.out.println("----------------------------------------------------------------------------");
+			    while (rs2.next()) {
+			        int price = rs2.getInt("MPRICE");
+			        String menuName = rs2.getString("MNAME");
+			        int orderQuan = rs2.getInt("QUAN");
+			        String orderDate = rs2.getString("ODATE"); // ODATE의 문자열 형식으로 변환된 값 가져오기
+			        System.out.printf("%-30s%-20s%-5s%-10s\n", orderDate, menuName, orderQuan, price * orderQuan);
+			        
+			    }
+			    System.out.println("----------------------------------------------------------------------------");
+			    //System.out.println("============================================================================");
+			    System.out.println("        	");
+			}
+		
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+	}
+
 }

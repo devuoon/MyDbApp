@@ -1,11 +1,9 @@
 package Utils;
 
 import java.sql.Connection;
+
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class orderUtil {
 	
@@ -16,9 +14,9 @@ public class orderUtil {
 	        try (PreparedStatement deleteStmt = conn.prepareStatement(deleteSql)) {
 	            int rowsDeleted = deleteStmt.executeUpdate();
 	            if (rowsDeleted > 0) {
-	                System.out.println("장바구니를 비웠습니다.");
+//	                System.out.println("장바구니를 비웠습니다.");
 	            } else {
-	                System.out.println("장바구니가 이미 비어 있습니다.");
+//	                System.out.println("장바구니가 이미 비어 있습니다.");
 	            }
 	        }
 	    } catch (SQLException e) {
@@ -26,11 +24,14 @@ public class orderUtil {
 	    }
 	}
 	
-	// 오늘 날짜 
-	public String today() {
-	    Date today = new Date();
-	    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	    return dateFormat.format(today);
+	// 스탬프 갯수 구하기
+	public void getStamp() {
+		try(Connection conn = commonUtil.getConnection()){
+			String selectSql = "SELECT STAMP FROM USERS WHERE ID = ?";
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 
