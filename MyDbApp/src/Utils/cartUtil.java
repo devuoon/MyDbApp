@@ -98,7 +98,7 @@ public class cartUtil {
 	        }
 	    } catch (SQLException e) {
 	        e.printStackTrace();
-	    }
+	    } 
 	    return updatedStamp;
 	}
 	
