@@ -62,14 +62,14 @@
 
 ## 📽️ 데모 영상
 
-<details open>
+<details>
 <summary>회원가입</summary>
 
 ![회원가입](https://github.com/devuoon/Secret0rder/assets/104570636/1c764243-d125-4998-9ab4-54e18c2487c1)
 
 </details>
 
-<details open>
+<details>
 <summary>로그인/로그아웃</summary>
 
 - 로그인
@@ -81,7 +81,7 @@
   ![로그아웃](https://github.com/devuoon/Secret0rder/assets/104570636/0c66b26c-388d-466e-872d-5b8711d88161)
 
 </details>
-<details open>
+<details>
 <summary>장바구니 / 주문</summary>
 
 - 장바구니 / 결제
@@ -93,7 +93,7 @@
   ![스탬프 결제](https://github.com/devuoon/Secret0rder/assets/104570636/8a01dd69-07b0-4c87-9975-132731d4cca9)
 
 </details>
-<details open>
+<details>
 <summary>주문조회</summary>
 
 ![주문내역](https://github.com/devuoon/Secret0rder/assets/104570636/e38f1a9f-9b3d-42a1-83c4-991d3f0a2cda)
